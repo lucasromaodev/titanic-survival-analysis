@@ -1,29 +1,41 @@
+import os
 import pandas as pd
 
-# Carregar os dados
-df = pd.read_csv('Titanic-Dataset.csv')
+def clean_titanic_dataset(csv_path):
+    df = pd.read_csv(csv_path)
 
-# Excluir coluna com muitos valores ausentes
-df.drop(columns=['Cabin'], inplace=True)
+    # Drop columns with too many missing values
+    if 'Cabin' in df.columns:
+        df.drop(columns=['Cabin'], inplace=True)
 
-# Preencher valores ausentes em 'Age' com a mediana
-df['Age'].fillna(df['Age'].median(), inplace=True)
+    # Fill missing 'Age' values with the median
+    df['Age'].fillna(df['Age'].median(), inplace=True)
 
-# Preencher valores ausentes em 'Embarked' com a moda
-df['Embarked'].fillna(df['Embarked'].mode()[0], inplace=True)
+    # Fill missing 'Embarked' values with the mode
+    if 'Embarked' in df.columns:
+        df['Embarked'].fillna(df['Embarked'].mode()[0], inplace=True)
 
-# Remover espaços em branco extras nos nomes
-df['Name'] = df['Name'].str.strip()
+    # Strip extra spaces from names
+    if 'Name' in df.columns:
+        df['Name'] = df['Name'].str.strip()
 
-# Converter 'Sex' e 'Embarked' para minúsculas (padronização)
-df['Sex'] = df['Sex'].str.lower()
-df['Embarked'] = df['Embarked'].str.lower()
+    # Standardize string columns to lowercase
+    if 'Sex' in df.columns:
+        df['Sex'] = df['Sex'].str.lower()
+    if 'Embarked' in df.columns:
+        df['Embarked'] = df['Embarked'].str.lower()
 
-# Verificar se ainda há valores nulos
-print(df.isnull().sum())
+    # Show remaining null values
+    print("Null values after cleaning:")
+    print(df.isnull().sum())
 
-# Visualizar as primeiras linhas limpas
-print(df.head())
+    # Show first rows of cleaned dataset
+    print("\nFirst cleaned rows:")
+    print(df.head())
 
-# Salvar o dataset limpo (opcional)
-df.to_csv('Titanic-Dataset-Cleaned.csv', index=False)
+    # Save the cleaned dataset
+    clean_csv_path = os.path.join(os.path.dirname(csv_path), 'Titanic-Dataset-Cleaned.csv')
+    df.to_csv(clean_csv_path, index=False)
+    print(f"\n✅ Cleaned dataset saved at: {clean_csv_path}")
+
+    return clean_csv_path

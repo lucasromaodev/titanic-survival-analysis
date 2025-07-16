@@ -1,25 +1,30 @@
 import os
+import shutil
 
-# Define o diretório do kaggle.json e o destino do download
-os.environ['KAGGLE_CONFIG_DIR'] = r'C:\Users\luckh\Desktop\Automações\titanic-project'
-destino = r'C:\Users\luckh\Desktop\Automações\titanic-project'
+def download_titanic_csv():
+    # Copy kaggle.json to expected location temporarily
+    custom_path = r'C:\Users\luckh\Desktop\Automações\titanic-project\kaggle.json'
+    target_dir = r'C:\Users\luckh\.kaggle'
+    os.makedirs(target_dir, exist_ok=True)
+    shutil.copy(custom_path, os.path.join(target_dir, 'kaggle.json'))
 
-# Caminho completo do arquivo CSV que deve ser apagado se existir
-arquivo_csv = os.path.join(destino, 'Titanic-Dataset.csv')
+    # Continue as normal
+    download_dir = r'C:\Users\luckh\Desktop\Automações\titanic-project'
+    csv_path = os.path.join(download_dir, 'Titanic-Dataset.csv')
 
-# Apaga o arquivo CSV antigo se existir
-if os.path.isfile(arquivo_csv):
-    print(f"Arquivo existente encontrado, apagando: {arquivo_csv}")
-    os.remove(arquivo_csv)
+    if os.path.isfile(csv_path):
+        print(f"Existing file found, removing: {csv_path}")
+        os.remove(csv_path)
 
-# Cria a pasta destino se não existir
-os.makedirs(destino, exist_ok=True)
+    os.makedirs(download_dir, exist_ok=True)
+    
+    from kaggle.api.kaggle_api_extended import KaggleApi
 
-from kaggle.api.kaggle_api_extended import KaggleApi
+    api = KaggleApi()
+    api.authenticate()
 
-api = KaggleApi()
-api.authenticate()
+    print("Downloading Titanic dataset...")
+    api.dataset_download_files('yasserh/titanic-dataset', path=download_dir, unzip=True)
+    print("Download complete!")
 
-print("Baixando dataset Titanic...")
-api.dataset_download_files('yasserh/titanic-dataset', path=destino, unzip=True)
-print("Download finalizado!")
+    return csv_path
