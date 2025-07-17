@@ -34,7 +34,11 @@ def clean_titanic_dataset(csv_path):
     print(df.head())
 
     # Save the cleaned dataset
+    
     clean_csv_path = os.path.join(os.path.dirname(csv_path), 'Titanic-Dataset-Cleaned.csv')
+    if os.path.isfile(clean_csv_path):
+        print(f"Existing file found, removing: {clean_csv_path}")
+        os.remove(clean_csv_path)
     df.to_csv(clean_csv_path, index=False)
     print(f"\n✅ Cleaned dataset saved at: {clean_csv_path}")
 

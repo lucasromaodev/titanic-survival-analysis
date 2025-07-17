@@ -1,22 +1,19 @@
 import os
 import shutil
+from config import BASE_DIR, KAGGLE_JSON_PATH, TARGET_DIR
 
 def download_titanic_csv():
     # Copy kaggle.json to expected location temporarily
-    custom_path = r'C:\Users\luckh\Desktop\Automações\titanic-project\kaggle.json'
-    target_dir = r'C:\Users\luckh\.kaggle'
-    os.makedirs(target_dir, exist_ok=True)
-    shutil.copy(custom_path, os.path.join(target_dir, 'kaggle.json'))
+    os.makedirs(TARGET_DIR, exist_ok=True)
+    shutil.copy(KAGGLE_JSON_PATH, os.path.join(TARGET_DIR, 'kaggle.json'))
 
-    # Continue as normal
-    download_dir = r'C:\Users\luckh\Desktop\Automações\titanic-project'
-    csv_path = os.path.join(download_dir, 'Titanic-Dataset.csv')
+    csv_path = os.path.join(BASE_DIR, 'Titanic-Dataset.csv')
 
     if os.path.isfile(csv_path):
         print(f"Existing file found, removing: {csv_path}")
         os.remove(csv_path)
 
-    os.makedirs(download_dir, exist_ok=True)
+    os.makedirs(BASE_DIR, exist_ok=True)
     
     from kaggle.api.kaggle_api_extended import KaggleApi
 
@@ -24,7 +21,7 @@ def download_titanic_csv():
     api.authenticate()
 
     print("Downloading Titanic dataset...")
-    api.dataset_download_files('yasserh/titanic-dataset', path=download_dir, unzip=True)
+    api.dataset_download_files('yasserh/titanic-dataset', path=BASE_DIR, unzip=True)
     print("Download complete!")
 
     return csv_path
